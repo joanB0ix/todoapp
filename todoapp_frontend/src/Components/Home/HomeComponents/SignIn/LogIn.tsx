@@ -18,7 +18,7 @@ export default function LogIn(props: any) {
     function submitLogin(){
         axios.post(process.env.REACT_APP_API+'/auth/login', login)
         .then(function(response:any){
-            setCookie('token',response.data.access_token, {maxAge: 60*20});
+            setCookie('token',response.data.access_token);
             history.push('/todolist');
         }).catch(function(error:any){
             setError(true);
