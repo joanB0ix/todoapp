@@ -1,0 +1,80 @@
+@import '../../../../variables';
+.todo-wrapper{
+    margin: auto;
+    margin-top: 12px;
+    width: 98%;
+    height: 100px;
+    background-color: $light_black;
+    margin-bottom: 20px;
+    color: white;
+    display: grid;
+    grid-template-columns: 10% 80% 10%;
+    align-items: center;
+    font-family: 'Source Sans Pro';
+
+    .MuiSvgIcon-root{
+        min-height: 45px !important;
+        width: 45px;
+        transition: all 200ms;
+        cursor: pointer;
+    }
+}
+
+.todo-trash:hover{
+    color: $bright_red !important;
+}
+
+.todo-action-icons{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+.todolist-out{
+    display: grid;
+    grid-template-columns: 1fr 0.3fr;
+}
+
+.todolist-out-noedit{
+    display: flex;
+}
+
+.todo-info{
+    padding-top: 10px;
+    padding-left: 20px;
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    justify-self: left;
+    text-align: left;
+    row-gap: 10px;
+}
+
+.todo-title{
+    font-size: 2em;
+    font-weight: 700;
+}
+
+.todo-description{
+    font-size: 1.3em;
+    color: $grey;
+}
+
+.todo-check{
+    transition: all 100ms;
+    color: $bright_red;
+}
+
+.crossed{
+    .todo-title{
+        text-decoration: line-through;
+        color: $darker_grey;
+    }
+
+    .todo-description{
+        color: $darker_grey;
+    }
+}
+
+.todo-info-onlytitle{
+    display: flex;
+    justify-content: flex-start;
+}

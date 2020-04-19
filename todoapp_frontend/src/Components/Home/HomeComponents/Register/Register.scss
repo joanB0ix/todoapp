@@ -1,0 +1,50 @@
+@import '../../../../variables';
+
+.register-title{
+    font-weight: 900;
+    font-size: 1.2em;
+    margin-bottom: 20px;
+    color: white;
+}
+
+.register-wrapper{
+    height: 450px;
+    width: 450px;
+    display: grid;
+    grid-row: 1fr 1fr;
+}
+
+.register-form-wrapper{
+    height: 100%;
+    display: grid;
+    grid-template-rows: 0.2fr 0.2fr 0.2fr 0.2fr 1fr;
+    row-gap: 10px;
+}
+
+.register-form-button{
+    font-family: 'Source Sans Pro';
+    height: 50px;
+    font-weight: 700;
+    border: none;
+    color: white;
+    font-size: 0.6em;
+    width: 80%;
+    background-color: $bright_red;
+    outline: none;
+    transition: all 300ms;
+    cursor: pointer;
+}
+
+.register-form-button:hover{
+    background-color: $purple;
+}
+
+.register-form-error{
+    height: 1.4em;
+    color: $bright_red;
+    font-size: 0.5em;
+}
+
+.register-form-input-error{
+    border: $bright_red 0.5px solid !important;
+}
