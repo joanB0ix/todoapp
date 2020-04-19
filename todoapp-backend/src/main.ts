@@ -12,6 +12,6 @@ async function bootstrap() {
   app.enableCors({
     origin: 'https://todo.joanboix.dev'
   });
-  await app.listen(3000);
+  await app.listen(3001);
 }
 bootstrap();

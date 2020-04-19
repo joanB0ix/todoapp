@@ -13,7 +13,13 @@ export default function TodoList(props: any) {
 
     const axios = require('axios');
 
-    const [list, setList] = React.useState([]);
+    interface todoS {
+        name: string;
+        description: string;
+        category: string;
+    }
+
+    const [list, setList] = React.useState<todoS[]>([]);
 
     const [categoryToSend, setCategoryToSend] = React.useState("");
 
@@ -26,6 +32,8 @@ export default function TodoList(props: any) {
         description: "",
         category: ""
     });
+
+    const [force, setForce] = React.useState(false);
 
     const [categorySelected, setCategory] = React.useState('MY DAY');
 
@@ -60,35 +68,38 @@ export default function TodoList(props: any) {
     //This function creates a Category
     function createCategory() {
 
+        listcategory.push(categoryToSend);
+        setListCategory(listcategory);
+        setCategory(categoryToSend);            
+        setCategoryToSend('');
+        
         axios.put(process.env.REACT_APP_API + '/users/update/add/category/' + categoryToSend, [], {
             headers: {
                 'Authorization': `Bearer ${cookies.token}`
             }
-        }).then(
-            function (response: any) {
-                setListCategory(response.data);
-            }
-        );
-
-        setCategoryToSend('');
-
+        });
     }
 
     //This function deletes a Category
-    function deleteCategory(item: string) {
+    function deleteCategory(item: string, e:any) {
+        var index = listcategory.indexOf(item);
+
+        listcategory.splice(index, 1);
+
+        setListCategory(listcategory);
+
+        if(categorySelected == item){
+            setCategory(listcategory[index-1]);
+        }
 
         axios.put(process.env.REACT_APP_API + '/users/update/remove/category/' + item, [], {
             headers: {
                 'Authorization': `Bearer ${cookies.token}`
             }
-        }).then(
-            function (response: any) {
-                setListCategory(response.data);
-                setCategory('MY DAY');
-            }
-        );
+        });
+        setForce(!force);
+        e.stopPropagation();
     }
-
 
     //Change handlers that update their respective states on keystroke.
     function changeHandlerTodo(e: any) {
@@ -116,15 +127,13 @@ export default function TodoList(props: any) {
     //Creates a Todo
     function createTodo() {
         if (todo.name !== "") {
+            list.push(todo);
+            setList(list);
             axios.post(process.env.REACT_APP_API + '/todos/create', { name: todo.name, description: todo.description, category: categorySelected, checked: false }, {
                 headers: {
                     'Authorization': `Bearer ${cookies.token}`
                 }
-            }).then(
-                function (response: any) {
-                    setList(response.data);
-                });
-
+            })
             setTodo({ name: "", description: "", category: "" });
         }
     }
@@ -157,6 +166,11 @@ export default function TodoList(props: any) {
     }
 
 
+    function deleteTodo(key: number) {
+        list.splice(key, 1);
+        setList(list);
+    }
+
     return (
         <div>
             {
@@ -186,7 +200,7 @@ export default function TodoList(props: any) {
                                     return (
                                         <div key={i} className={"todolist-category-out " + ((categorySelected == item) ? 'active' : '')} onClick={() => setCategory(item)}>
                                             <div className="todolist-category">
-                                                {(i >= 2) ? <ClearIcon onClick={() => deleteCategory(item)} className="todolist-category-cross" /> : listIcon[i]}
+                                                {(i >= 2) ? <ClearIcon onClick={e => deleteCategory(item, e)} className="todolist-category-cross" /> : listIcon[i]}
                                                 <span>
                                                     {item}
                                                 </span>
@@ -204,18 +218,18 @@ export default function TodoList(props: any) {
                             <div className="todolist-category-text">
                                 {categorySelected}
                             </div>
-                            <ExitToAppIcon onClick={()=>removeCookie('token')}/>
+                            <ExitToAppIcon onClick={() => removeCookie('token')} />
                         </div>
                         <div className={(toEdit) ? "todolist-out" : ""}>
                             <div className="todolist-in">
                                 {
-                                    getCategorylist(categorySelected).map((item, i) => <Todo key={item["_id"]} updateFun={setEdit} updateTodo={setTodoEdit} todo={item} id={item["_id"]} checked={item["checked"]} setList={setList} title={item["name"]} category={item["category"]} description={item["description"]} />)
+                                    getCategorylist(categorySelected).map((item, i) => <Todo key={item["_id"]} numero={i} deleteFun={deleteTodo} updateFun={setEdit} updateTodo={setTodoEdit} todo={item} id={item["_id"]} checked={item["checked"]} setList={setList} title={item["name"]} category={item["category"]} description={item["description"]} />)
                                 }
                             </div>
                             {
                                 toEdit &&
                                 <div className="todolist-edit-side">
-                                    <ClearIcon onClick={()=>setEdit(false)}/>
+                                    <ClearIcon onClick={() => setEdit(false)} />
                                     <form onSubmit={e => { e.preventDefault(); updateTodo() }}>
                                         <input
                                             name="name"
@@ -225,11 +239,11 @@ export default function TodoList(props: any) {
                                         >
                                         </input>
                                         <textarea
-                                        placeholder="DESCRIPTION"
-                                        name="description"
-                                        onChange={changeHandlerEdit}
-                                        value={todoEdit.description}
-                                        rows={5}
+                                            placeholder="DESCRIPTION"
+                                            name="description"
+                                            onChange={changeHandlerEdit}
+                                            value={todoEdit.description}
+                                            rows={5}
                                         >
                                         </textarea>
                                         <input type="submit" style={{ display: 'none' }}>
