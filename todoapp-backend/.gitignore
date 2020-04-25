@@ -1,6 +1,7 @@
 # compiled output
 /dist
 /node_modules
+/auth
 
 # Logs
 logs
@@ -13,7 +14,6 @@ lerna-debug.log*
 # OS
 .DS_Store
 .env
-constants.ts
 
 # Tests
 /coverage
