@@ -17,6 +17,7 @@ export default function TodoList(props: any) {
         name: string;
         description: string;
         category: string;
+        _id: string;
     }
 
     const [list, setList] = React.useState<todoS[]>([]);
@@ -30,7 +31,8 @@ export default function TodoList(props: any) {
     const [todo, setTodo] = React.useState({
         name: "",
         description: "",
-        category: ""
+        category: "",
+        _id: ""
     });
 
     const [force, setForce] = React.useState(false);
@@ -67,17 +69,17 @@ export default function TodoList(props: any) {
 
     //This function creates a Category
     function createCategory() {
-
-        listcategory.push(categoryToSend);
-        setListCategory(listcategory);
-        setCategory(categoryToSend);            
-        setCategoryToSend('');
-        
-        axios.put(process.env.REACT_APP_API + '/users/update/add/category/' + categoryToSend, [], {
-            headers: {
-                'Authorization': `Bearer ${cookies.token}`
-            }
-        });
+        if(listcategory.indexOf(categoryToSend) === -1){
+            listcategory.push(categoryToSend);
+            setListCategory(listcategory);
+            setCategory(categoryToSend);            
+            setCategoryToSend('');
+            axios.put(process.env.REACT_APP_API + '/users/update/add/category/' + categoryToSend, [], {
+                headers: {
+                    'Authorization': `Bearer ${cookies.token}`
+                }
+            });
+        }
     }
 
     //This function deletes a Category
@@ -127,14 +129,19 @@ export default function TodoList(props: any) {
     //Creates a Todo
     function createTodo() {
         if (todo.name !== "") {
-            list.push(todo);
+            list.push({name: todo.name, description: todo.description, category: categorySelected, _id:""});
             setList(list);
+            setForce(!force);
             axios.post(process.env.REACT_APP_API + '/todos/create', { name: todo.name, description: todo.description, category: categorySelected, checked: false }, {
                 headers: {
                     'Authorization': `Bearer ${cookies.token}`
                 }
-            })
-            setTodo({ name: "", description: "", category: "" });
+            }).then(
+                function(response:any){
+                    setList(response.data);
+                }
+            );
+            setTodo({ name: "", description: "", category: "", _id:"" });
         }
     }
 
@@ -166,9 +173,15 @@ export default function TodoList(props: any) {
     }
 
 
-    function deleteTodo(key: number) {
-        list.splice(key, 1);
+    function deleteTodo(key: string) {
+        for(let i = 0; i < list.length; i++){
+            if(key === list[i]['_id']){
+                list.splice(i,1);
+                break;
+            }
+        }
         setList(list);
+        setForce(!force);
     }
 
     return (
@@ -257,7 +270,7 @@ export default function TodoList(props: any) {
                         </div>
 
                         <div className="todolist-edit-out">
-                            <form className="todolist-edit" onSubmit={e => { e.preventDefault(); createTodo() }}>
+                            <form className="todolist-edit" onSubmit={e => { createTodo(); e.preventDefault(); }}>
                                 <div>
                                     <input
                                         type="text"

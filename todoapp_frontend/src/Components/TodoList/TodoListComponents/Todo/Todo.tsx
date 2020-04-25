@@ -42,15 +42,12 @@ export default function Todo(props: any) {
 
     function deleteElement() {
         trashSound.play();
+        props.deleteFun(props.id);
         axios.delete(process.env.REACT_APP_API + '/todos/delete/' + props.id, {
             headers: {
                 'Authorization': `Bearer ${cookies.token}`
             }
-        }).then(
-            function (response: any) {
-                props.setList(response.data);
-            }
-        );
+        });
     }
 
     function checkUncheck() {
